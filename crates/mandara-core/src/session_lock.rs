@@ -540,8 +540,9 @@ fn new_buffer(shm: &wl_shm::WlShm, qh: &QueueHandle<State>, width: u32, height: 
 /// laptop) must not make up the repeats it missed in one burst: that would
 /// type extra characters into the password.
 fn next_repeat(due: Instant, now: Instant, rate_hz: i32) -> Instant {
-    let next = due + Duration::from_secs_f32(1.0 / rate_hz.max(1) as f32);
-    if next > now { next } else { now + Duration::from_secs_f32(1.0 / rate_hz.max(1) as f32) }
+    let period = Duration::from_secs(1) / rate_hz.max(1).unsigned_abs();
+    let next = due + period;
+    if next > now { next } else { now + period }
 }
 
 /// Copies premultiplied RGBA into the shm buffer (`ARGB8888` is BGRA in
